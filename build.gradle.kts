@@ -6,12 +6,19 @@ java {
     withSourcesJar()
 }
 tasks.withType<JavaCompile>().configureEach { options.release.set(17); options.encoding = "UTF-8" }
+sourceSets.test {
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().output
+}
 tasks.register<JavaExec>("contractTest") {
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("megalodonte.contracts.CoreContractTest")
 }
-tasks.test { enabled = false }
+tasks.test {
+    dependsOn("contractTest")
+    failOnNoDiscoveredTests = false
+}
 tasks.check { dependsOn("contractTest") }
 val verifyBoundary = tasks.register("verifyPortableBoundary") {
     inputs.files(sourceSets.main.get().allJava)

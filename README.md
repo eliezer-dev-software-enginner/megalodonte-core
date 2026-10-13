@@ -34,4 +34,4 @@ The capability contract describes categories of backend support, not the complet
 ./gradlew check publishToMavenLocal
 ```
 
-This repository is also a submodule of `megalodonte-libs`.
+In the Megalodonte workspace, check out this independent repository under `framework/libraries/megalodonte-core`.
