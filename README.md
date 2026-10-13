@@ -1,39 +1,37 @@
-# megalodonte-core
+# Megalodonte Core
 
-Contrato neutro compartilhado por JavaFX e Android. Contém estado observável,
-assinaturas descartáveis, tokens/ThemeInterface/ThemeManager, política de escala,
-ScreenLifecycle, matcher de rotas e BackendContract v1.
+Platform-neutral contracts shared by JavaFX and Android. This module owns observable state, disposable subscriptions, semantic theme tokens, scaling policy, screen lifecycle, route matching and backend capability metadata. It contains no JavaFX or Android imports.
 
 ```kotlin
 implementation("megalodonte:megalodonte-core:1.0.0-beta")
 ```
 
-Compilado com JDK 25 e `--release 17`. O check bloqueia imports de plataforma e
-bytecode superior a Java 17. O módulo JPMS `megalodonte.core` exporta os pacotes
-neutros originais; os hosts não podem recompilar esses mesmos tipos em seus jars.
+The project uses a Java 25 toolchain but emits Java 17 bytecode. Its checks reject platform imports and bytecode above Java 17. The JPMS module `megalodonte.core` exports the neutral packages. Hosts must depend on this artifact instead of recompiling the same classes into their own JARs.
 
-```powershell
-./gradlew.bat check publishToMavenLocal
-```
+## Public contracts
 
-`ScaleProvider.setDetector` e `ThemePlatform.install` pertencem ao bootstrap de
-cada host. Fonts/scene styling continuam específicos; os hooks não afirmam que
-uma Scene existe em Android. `ThemeManager.applyFontFamily(Object)` é transitório:
-consumidores binários antigos devem ser recompilados.
+| Package | Main types | Responsibility |
+| --- | --- | --- |
+| `megalodonte.base.state` | `State`, `ReadableState`, `Subscription`, `ForEachState` | Mutable and read-only state, observation and disposal |
+| `megalodonte.base.theme` | `ThemeInterface`, `ThemeManager`, `ThemeColors`, `ThemeTypography`, `ThemeSpacing`, `ThemePadding`, `ThemeBorder`, `ThemePlatform` | Semantic design tokens and host hooks |
+| `megalodonte.base.scale` | `ScaleProvider` | Host-supplied display scaling |
+| `megalodonte.contracts` | `ScreenLifecycle`, `RouteMatcher`, `BackendContract`, `Capability` | Lifecycle, navigation matching and backend capability negotiation |
+
+The host installs `ScaleProvider.setDetector` and `ThemePlatform.install` during bootstrap. Scene and font loading belong to the host; Android does not have a JavaFX `Scene`. `ThemeManager.applyFontFamily(Object)` is transitional, so consumers built against older signatures must be recompiled.
 
 ```java
+State<String> state = State.of("ready");
 try (Subscription binding = state.observe(this::update)) {
-    // Encerrar o handle remove a assinatura do estado.
+    state.set("running");
 }
 ```
 
-`map` observa a fonte somente enquanto há assinantes e mantém supressão de valores
-derivados iguais. Estados/observadores devem ser usados na thread definida pelo
-host; volatile não torna listas de listeners thread-safe.
-Mapeadores devem ser puros: get do estado derivado recalcula a partir da fonte;
-ComputedState continua sendo a opção de cálculo cacheado por dependências.
+`State` calls observers immediately, suppresses equal updates and assumes the host's UI-thread policy. Its `volatile` value does not make listener mutation thread-safe. `ReadableState.map` subscribes only while observed and recomputes on `get`; use `ComputedState` from the reactivity module for a cached derived value. Keep mapper functions pure.
 
-O contrato de capacidade descreve categorias, não toda a API dos componentes.
-Consulte a análise/matriz no projeto irmão `megalodonte-android/docs` para lacunas
-e sequência de migração. Este projeto tem repositório próprio e é submódulo de
-`megalodonte-libs`.
+The capability contract describes categories of backend support, not the complete component API. See the sibling Android project's documentation for the current coverage matrix.
+
+```sh
+./gradlew check publishToMavenLocal
+```
+
+This repository is also a submodule of `megalodonte-libs`.
