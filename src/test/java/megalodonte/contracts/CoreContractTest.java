@@ -19,6 +19,12 @@ public final class CoreContractTest {
         binding.close(); binding.close(); source.set(4);
         require(seen.equals(List.of(0, 1)), "Disposable mapping must stop notifications");
         require(source.map(Object::toString).get().equals("4"), "Unobserved derived state must read current value");
+        State<Integer> nested = State.of(0);
+        List<Integer> nestedSeen = new ArrayList<>();
+        nested.subscribe(value -> { if (value == 1) nested.set(2); });
+        nested.subscribe(nestedSeen::add);
+        nested.set(1);
+        require(nestedSeen.equals(List.of(0, 2, 1)), "Each notification must carry the value that triggered it");
         ScaleProvider.setDetector(() -> 2.0);
         require(new ThemeTypography(18,16,14,12).body() == 28, "Shared tokens must use platform scale");
         ScaleProvider.setScale(1.0);

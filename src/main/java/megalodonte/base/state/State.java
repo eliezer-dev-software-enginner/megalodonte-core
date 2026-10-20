@@ -59,7 +59,7 @@ public class State<T> implements ReadableState<T> {
         this.value = newValue;
 
         for (var listener : List.copyOf(listeners)) {
-            listener.accept(value);
+            listener.accept(newValue);
         }
     }
 
