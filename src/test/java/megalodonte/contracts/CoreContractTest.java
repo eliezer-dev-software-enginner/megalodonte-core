@@ -3,6 +3,7 @@ package megalodonte.contracts;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import megalodonte.config.RuntimeEnvironment;
 import megalodonte.base.scale.ScaleProvider;
 import megalodonte.base.state.State;
 import megalodonte.base.state.Subscription;
@@ -10,7 +11,19 @@ import megalodonte.base.theme.ThemeTypography;
 
 public final class CoreContractTest {
     static void require(boolean condition, String message) { if (!condition) throw new AssertionError(message); }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        var configFile=java.nio.file.Files.createTempFile("megalodonte-runtime-",".env");
+        try {
+            java.nio.file.Files.writeString(configFile,"# local\nMEGALODONTE_CONTRACT_VALUE='local value'\n");
+            require(new RuntimeEnvironment(configFile).require("MEGALODONTE_CONTRACT_VALUE").equals("local value"),
+                    "Runtime .env must be read without embedding values in a launcher");
+            require(new RuntimeEnvironment(configFile,java.util.Map.of("MEGALODONTE_CONTRACT_VALUE","process value"))
+                    .require("MEGALODONTE_CONTRACT_VALUE").equals("process value"),
+                    "Process environment must override the private .env");
+            java.nio.file.Files.writeString(configFile,"invalid-secret-line\n");
+            try { new RuntimeEnvironment(configFile).get("MEGALODONTE_CONTRACT_VALUE");throw new AssertionError("Invalid .env accepted"); }
+            catch(java.io.IOException expected) { require(!expected.getMessage().contains("invalid-secret-line"),"Do not reveal .env values"); }
+        } finally { java.nio.file.Files.deleteIfExists(configFile); }
         State<Integer> source = State.of(0);
         List<Integer> seen = new ArrayList<>();
         Subscription binding = source.map(value -> value % 2).observe(seen::add);

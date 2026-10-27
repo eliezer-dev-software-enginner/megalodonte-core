@@ -3,4 +3,5 @@ module megalodonte.core {
     exports megalodonte.base.theme;
     exports megalodonte.base.scale;
     exports megalodonte.contracts;
+    exports megalodonte.config;
 }

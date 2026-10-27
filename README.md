@@ -46,3 +46,6 @@ The capability contract describes categories of backend support, not the complet
 ## License
 
 No license file is present in this repository. Licensing terms require confirmation from the project maintainer.
+# Configuração privada em runtime
+
+`megalodonte.config.RuntimeEnvironment.forApp("nome-do-app")` lê primeiro as variáveis de ambiente do processo e depois o `.env` privado do usuário: `%APPDATA%/Megalodonte/nome-do-app/.env` no Windows ou `~/.config/megalodonte/nome-do-app/.env` no Linux (`XDG_CONFIG_HOME` é respeitado). `forAppOrProject` aceita o `.env` da raiz apenas durante desenvolvimento, quando a pasta atual contém `packaging.toml`. Use `require("CHAVE")` para campos obrigatórios. O instalador não inclui o arquivo nem credenciais em opções `-D`.
