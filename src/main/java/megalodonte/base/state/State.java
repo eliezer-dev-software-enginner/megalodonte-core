@@ -72,6 +72,7 @@ public class State<T> implements ReadableState<T> {
      */
     public void subscribe(Consumer<T> listener) {
         listeners.add(listener);
+        SubscriptionScope.onClose(() -> unsubscribe(listener));
         try { listener.accept(value); }
         catch (RuntimeException error) { listeners.remove(listener); throw error; }
     }

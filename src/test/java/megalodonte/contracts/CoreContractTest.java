@@ -12,6 +12,27 @@ import megalodonte.base.theme.ThemeTypography;
 public final class CoreContractTest {
     static void require(boolean condition, String message) { if (!condition) throw new AssertionError(message); }
     public static void main(String[] args) throws Exception {
+        State<Integer> renderState = State.of(10);
+        List<Integer> rendered = new ArrayList<>();
+        var render = megalodonte.base.state.SubscriptionScope.capture(() -> {
+            renderState.map(value -> value * 2).subscribe(rendered::add);
+            return "view";
+        });
+        renderState.set(11);
+        render.scope().close();
+        render.scope().close();
+        renderState.set(12);
+        require(rendered.equals(List.of(20, 22)), "Render cleanup must stop mapped notifications without resetting State");
+        require(renderState.get() == 12, "Render scope must not own State values");
+        try {
+            megalodonte.base.state.SubscriptionScope.capture(() -> {
+                renderState.subscribe(rendered::add);
+                throw new IllegalStateException("failed render");
+            });
+            throw new AssertionError("Expected render failure");
+        } catch (IllegalStateException expected) { }
+        renderState.set(13);
+        require(rendered.equals(List.of(20, 22, 12)), "Failed render must clean up its subscriptions");
         var configFile=java.nio.file.Files.createTempFile("megalodonte-runtime-",".env");
         try {
             java.nio.file.Files.writeString(configFile,"# local\nMEGALODONTE_CONTRACT_VALUE='local value'\n");

@@ -39,6 +39,7 @@ final class MappedState<T, R> implements ReadableState<R> {
             if (handles.isEmpty()) registrations.remove(listener);
         });
         handles.add(holder[0]);
+        SubscriptionScope.onClose(holder[0]::close);
         return holder[0];
     }
     @Override public boolean unsubscribe(Consumer<R> listener) {

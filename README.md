@@ -20,9 +20,17 @@ The JPMS module `megalodonte.core` exports the neutral packages. Hosts should de
 
 ## Public contracts
 
+`SubscriptionScope.capture(builder)` groups subscriptions created synchronously
+by a render without owning the `State` values. Close `captured.scope()` when the
+tree is discarded; a failing builder is cleaned up automatically. Core state and
+mapped state participate; custom state implementations can register their cleanup
+with `SubscriptionScope.onClose(...)`. This is platform-neutral and opt-in: normal
+subscriptions outside a capture retain their existing lifetime. Desktop live reload
+uses it to release old or rejected trees. Work created asynchronously is not captured.
+
 | Package | Main types | Responsibility |
 | --- | --- | --- |
-| `megalodonte.base.state` | `State`, `ReadableState`, `Subscription`, `ForEachState` | Mutable and read-only state, observation and disposal |
+| `megalodonte.base.state` | `State`, `ReadableState`, `Subscription`, `SubscriptionScope`, `ForEachState` | Mutable and read-only state, observation and disposal |
 | `megalodonte.base.theme` | `ThemeInterface`, `ThemeManager`, `ThemeColors`, `ThemeTypography`, `ThemeSpacing`, `ThemePadding`, `ThemeBorder`, `ThemePlatform` | Semantic design tokens and host hooks |
 | `megalodonte.base.scale` | `ScaleProvider` | Host-supplied display scaling |
 | `megalodonte.contracts` | `ScreenLifecycle`, `RouteMatcher`, `BackendContract`, `Capability` | Lifecycle, navigation matching and backend capability negotiation |
