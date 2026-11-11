@@ -51,9 +51,19 @@ try (Subscription binding = state.observe(value -> System.out.println(value))) {
 
 The capability contract describes categories of backend support, not the complete component API. Platform coverage depends on the host implementation and is not specified in this repository.
 
+## Private runtime configuration
+
+`megalodonte.config.RuntimeEnvironment.forApp("application-name")` reads process
+environment variables first, followed by the user's private `.env` file. The file
+is located at `%APPDATA%/Megalodonte/application-name/.env` on Windows and
+`~/.config/megalodonte/application-name/.env` on Linux; `XDG_CONFIG_HOME` is
+respected.
+
+`forAppOrProject` also accepts the project-root `.env` during development when
+the current directory contains `packaging.toml`. Use `require("KEY")` for required
+values. Packaging never includes the private file or places credentials in `-D`
+options.
+
 ## License
 
 No license file is present in this repository. Licensing terms require confirmation from the project maintainer.
-# Configuração privada em runtime
-
-`megalodonte.config.RuntimeEnvironment.forApp("nome-do-app")` lê primeiro as variáveis de ambiente do processo e depois o `.env` privado do usuário: `%APPDATA%/Megalodonte/nome-do-app/.env` no Windows ou `~/.config/megalodonte/nome-do-app/.env` no Linux (`XDG_CONFIG_HOME` é respeitado). `forAppOrProject` aceita o `.env` da raiz apenas durante desenvolvimento, quando a pasta atual contém `packaging.toml`. Use `require("CHAVE")` para campos obrigatórios. O instalador não inclui o arquivo nem credenciais em opções `-D`.
