@@ -4,4 +4,5 @@ module megalodonte.core {
     exports megalodonte.base.scale;
     exports megalodonte.contracts;
     exports megalodonte.config;
+    exports megalodonte.common_platform;
 }
