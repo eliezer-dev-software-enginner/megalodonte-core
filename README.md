@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/megalodonte-logo.png" width="180" alt="Megalodonte logo">
+</p>
+
 # Megalodonte Core
 
 Platform-neutral Java library of contracts shared by JavaFX and Android hosts. It provides observable state, disposable subscriptions, semantic theme tokens, scaling policy, screen lifecycle, route matching and backend capability metadata. It contains no JavaFX or Android imports.
