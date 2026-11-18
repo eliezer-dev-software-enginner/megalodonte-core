@@ -40,6 +40,11 @@ Package names may remain source-compatible across platforms. Artifact and JPMS n
 must reveal the platform so a dependency graph cannot silently select JavaFX for an
 Android application or an Android adapter for desktop.
 
+Neutral artifacts compile with a Java 17 toolchain so they can participate in
+Android builds using AGP 8.12 and Gradle 8.13. Desktop applications can still
+use Java 25 independently; the neutral bytecode boundary does not require the
+Android build daemon to run on Java 25.
+
 ## Initial shared contracts
 
 - `ReadableState<T>` and `State<T>`: shared observable values.

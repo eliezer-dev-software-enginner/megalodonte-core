@@ -2,7 +2,7 @@ plugins { `java-library`; `maven-publish` }
 group = "megalodonte"
 version = "1.0.0-beta"
 java {
-    toolchain { languageVersion.set(JavaLanguageVersion.of(25)) }
+    toolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
     withSourcesJar()
 }
 tasks.withType<JavaCompile>().configureEach { options.release.set(17); options.encoding = "UTF-8" }
@@ -17,7 +17,15 @@ tasks.register<JavaExec>("contractTest") {
 }
 tasks.test {
     dependsOn("contractTest")
-    failOnNoDiscoveredTests = false
+    // Gradle 9 fails when this lifecycle task has no JUnit tests. The property
+    // does not exist in Gradle 8.13, used by AGP 8.12, so configure it only
+    // when the running Gradle exposes it.
+    javaClass.methods.firstOrNull {
+        it.name == "getFailOnNoDiscoveredTests" && it.parameterCount == 0
+    }?.invoke(this)?.let { property ->
+        @Suppress("UNCHECKED_CAST")
+        (property as org.gradle.api.provider.Property<Boolean>).set(false)
+    }
 }
 tasks.check { dependsOn("contractTest") }
 val verifyBoundary = tasks.register("verifyPortableBoundary") {
