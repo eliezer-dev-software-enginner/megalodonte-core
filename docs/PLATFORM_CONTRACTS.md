@@ -26,7 +26,9 @@ applies to future libraries.
 ## Naming
 
 Neutral artifacts do not receive a platform suffix. Current examples are
-`megalodonte-core`, `megalodonte-theme`, and `megalodonte-reactivity-portable`.
+`megalodonte-core` and `megalodonte-theme`. The Android base compiles the
+platform-neutral reactive source subset directly from `megalodonte-reactivity`;
+there is no intermediate portable reactivity artifact.
 
 Platform artifacts end with their platform:
 
