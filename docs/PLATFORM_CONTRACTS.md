@@ -45,7 +45,17 @@ Android application or an Android adapter for desktop.
 - `ReadableState<T>` and `State<T>`: shared observable values.
 - `ForEachState<T, C>`: observable list mapped to platform components.
 - `ConditionalContent<C>`: condition plus true/false composition branches.
+- `ComponentContract<C>` and `RefContract<T>`: component binding through a
+  platform-neutral reference.
+- `ScreenComponentContract<C>`: screen composition and lifecycle without a
+  native toolkit type.
 - `ScreenLifecycle`: platform-neutral mount and destroy lifecycle.
+
+Component contracts deliberately do not expose JavaFX `Node`, Android `View`,
+bridge identifiers or native children. Those details remain in each platform
+implementation. The packages `megalodonte.base.components` and
+`megalodonte.components` are separate layers: the first owns component and
+screen abstractions, while the second owns concrete controls and layouts.
 - `RouteMatcher<R>`: deterministic path matching.
 - `BackendContract`: explicit platform capabilities.
 

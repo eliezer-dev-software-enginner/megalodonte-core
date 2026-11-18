@@ -37,7 +37,7 @@ uses it to release old or rejected trees. Work created asynchronously is not cap
 | `megalodonte.base.state` | `State`, `ReadableState`, `Subscription`, `SubscriptionScope`, `ForEachState` | Mutable and read-only state, observation and disposal |
 | `megalodonte.base.theme` | `ThemeInterface`, `ThemeManager`, `ThemeColors`, `ThemeTypography`, `ThemeSpacing`, `ThemePadding`, `ThemeBorder`, `ThemePlatform` | Semantic design tokens and host hooks |
 | `megalodonte.base.scale` | `ScaleProvider` | Host-supplied display scaling |
-| `megalodonte.contracts` | `ScreenLifecycle`, `RouteMatcher`, `ConditionalContent`, `BackendContract`, `Capability` | Lifecycle, navigation and composition contracts, and backend capability negotiation |
+| `megalodonte.contracts` | `ScreenLifecycle`, `ScreenComponentContract`, `ComponentContract`, `RefContract`, `RouteMatcher`, `ConditionalContent`, `BackendContract`, `Capability` | Lifecycle, references, navigation and composition contracts, and backend capability negotiation |
 
 The core owns behavioral contracts rather than desktop or Android widgets. Platform
 libraries implement those contracts with their native component representation. See

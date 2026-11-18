@@ -68,6 +68,22 @@ public final class CoreContractTest {
         require(conditional.activeContent().equals(List.of("no")), "False branch must be selected");
         visible.set(true);
         require(conditional.activeContent().equals(List.of("yes")), "True branch must be selected");
+        RefContract<String> reference = new RefContract<>() {
+            private String current;
+            @Override public String current() { return current; }
+            @Override public void setCurrent(String value) { current = value; }
+        };
+        ComponentContract<String> component = new ComponentContract<>() {
+            @Override public <T extends String> String ref(RefContract<T> target) {
+                @SuppressWarnings("unchecked") T self = (T) "component";
+                target.setCurrent(self);
+                return self;
+            }
+        };
+        require(component.ref(reference).equals("component"), "Component binding must return the component");
+        require(reference.current().equals("component"), "Shared Ref contract must expose the bound component");
+        ScreenComponentContract<String> screen = () -> "screen";
+        require(screen.render().equals("screen"), "Shared screen contract must expose its component tree");
         ScaleProvider.setDetector(() -> 2.0);
         require(new ThemeTypography(18,16,14,12).body() == 28, "Shared tokens must use platform scale");
         ScaleProvider.setScale(1.0);
