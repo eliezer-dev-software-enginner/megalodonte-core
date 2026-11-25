@@ -59,6 +59,31 @@ public final class CoreContractTest {
         nested.subscribe(nestedSeen::add);
         nested.set(1);
         require(nestedSeen.equals(List.of(0, 2, 1)), "Each notification must carry the value that triggered it");
+        State<Boolean> visible = State.of(false);
+        ConditionalContent<String> conditional = new ConditionalContent<>() {
+            @Override public megalodonte.base.state.ReadableState<Boolean> condition() { return visible; }
+            @Override public String trueContent() { return "yes"; }
+            @Override public java.util.Optional<String> falseContent() { return java.util.Optional.of("no"); }
+        };
+        require(conditional.activeContent().equals(List.of("no")), "False branch must be selected");
+        visible.set(true);
+        require(conditional.activeContent().equals(List.of("yes")), "True branch must be selected");
+        RefContract<String> reference = new RefContract<>() {
+            private String current;
+            @Override public String current() { return current; }
+            @Override public void setCurrent(String value) { current = value; }
+        };
+        ComponentContract<String> component = new ComponentContract<>() {
+            @Override public <T extends String> String ref(RefContract<T> target) {
+                @SuppressWarnings("unchecked") T self = (T) "component";
+                target.setCurrent(self);
+                return self;
+            }
+        };
+        require(component.ref(reference).equals("component"), "Component binding must return the component");
+        require(reference.current().equals("component"), "Shared Ref contract must expose the bound component");
+        ScreenComponentContract<String> screen = () -> "screen";
+        require(screen.render().equals("screen"), "Shared screen contract must expose its component tree");
         ScaleProvider.setDetector(() -> 2.0);
         require(new ThemeTypography(18,16,14,12).body() == 28, "Shared tokens must use platform scale");
         ScaleProvider.setScale(1.0);

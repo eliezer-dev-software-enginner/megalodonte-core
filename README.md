@@ -37,7 +37,12 @@ uses it to release old or rejected trees. Work created asynchronously is not cap
 | `megalodonte.base.state` | `State`, `ReadableState`, `Subscription`, `SubscriptionScope`, `ForEachState` | Mutable and read-only state, observation and disposal |
 | `megalodonte.base.theme` | `ThemeInterface`, `ThemeManager`, `ThemeColors`, `ThemeTypography`, `ThemeSpacing`, `ThemePadding`, `ThemeBorder`, `ThemePlatform` | Semantic design tokens and host hooks |
 | `megalodonte.base.scale` | `ScaleProvider` | Host-supplied display scaling |
-| `megalodonte.contracts` | `ScreenLifecycle`, `RouteMatcher`, `BackendContract`, `Capability` | Lifecycle, navigation matching and backend capability negotiation |
+| `megalodonte.contracts` | `ScreenLifecycle`, `ScreenComponentContract`, `ComponentContract`, `RefContract`, `RouteMatcher`, `ConditionalContent`, `BackendContract`, `Capability` | Lifecycle, references, navigation and composition contracts, and backend capability negotiation |
+
+The core owns behavioral contracts rather than desktop or Android widgets. Platform
+libraries implement those contracts with their native component representation. See
+[Platform contracts and artifact naming](docs/PLATFORM_CONTRACTS.md) for the migration
+policy across base, components, reactivity, router, and future modules.
 
 The host installs `ScaleProvider.setDetector` and `ThemePlatform.install` during bootstrap. Scene and font loading belong to the host; Android does not have a JavaFX `Scene`. `ThemeManager.applyFontFamily(Object)` is transitional, so consumers built against older signatures must be recompiled.
 
