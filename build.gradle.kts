@@ -2,7 +2,7 @@ plugins { `java-library`; `maven-publish` }
 group = "megalodonte"
 version = "1.0.0-beta"
 java {
-    toolchain { languageVersion.set(JavaLanguageVersion.of(17)) }
+    toolchain { languageVersion.set(JavaLanguageVersion.of(25)) }
     withSourcesJar()
 }
 tasks.withType<JavaCompile>().configureEach { options.release.set(17); options.encoding = "UTF-8" }
